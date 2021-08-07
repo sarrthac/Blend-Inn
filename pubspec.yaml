@@ -14,10 +14,15 @@ dependencies:
   flutter:
     sdk: flutter
   http:
+  wallpaper_manager:
+  flutter_cache_manager:
+  wallpaper_manager_flutter: ^0.0.2
+
 
 
 
   cupertino_icons: ^1.0.2
+ # wallpaperplugin: ^0.1.2
 
 dev_dependencies:
   flutter_test:

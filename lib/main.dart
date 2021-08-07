@@ -9,7 +9,7 @@ void main() => runApp(new MyApp());
       return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: wallP_Screen(),
+      home: Wallpaper(),
       );
     }
   }

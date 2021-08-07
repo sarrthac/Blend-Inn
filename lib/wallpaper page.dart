@@ -1,97 +1,100 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'setWallpaper.dart';
 
-class wallP_Screen extends StatefulWidget {
-
-
+class Wallpaper extends StatefulWidget {
   @override
-  _wallP_ScreenState createState() => _wallP_ScreenState();
+  _WallpaperState createState() => _WallpaperState();
 }
 
-class _wallP_ScreenState extends State<wallP_Screen> {
-
+class _WallpaperState extends State<Wallpaper> {
   List images = [];
   int page = 1;
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
     fetchapi();
   }
-  fetchapi()async{
+
+  fetchapi() async {
     await http.get(Uri.parse('https://api.pexels.com/v1/curated?per_page=80'),
-        headers:{'Authorization':'563492ad6f91700001000001dff3a71159854dc7868ce269de803373'
-    }).then((value) {
+        headers: {'Authorization': '563492ad6f91700001000001dff3a71159854dc7868ce269de803373'}).then((value) {
       Map result = jsonDecode(value.body);
       setState(() {
         images = result['photos'];
       });
-      print(images);
+      print(images[0]);
     });
   }
 
-  loadmoreimages() async{
+  loadmore() async {
     setState(() {
       page = page + 1;
     });
-    String url = 'https://api.pexels.com/v1/curated?per_page=80&page='+page.toString();
-    await http.get(Uri.parse(url),
-        headers:{'Authorization':'563492ad6f91700001000001dff3a71159854dc7868ce269de803373'
-        }).then((value){
+    String url =
+        'https://api.pexels.com/v1/curated?per_page=80&page=' + page.toString();
+    await http.get(Uri.parse(url), headers: {'Authorization': '563492ad6f91700001000001dff3a71159854dc7868ce269de803373'}).then(
+            (value) {
           Map result = jsonDecode(value.body);
           setState(() {
             images.addAll(result['photos']);
           });
-    });
+        });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Blend Inn'),
-      ),
       body: Column(
         children: [
-          Expanded(child: Container(
-          child: GridView.builder( itemCount: images.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisSpacing: 2.0,
-                crossAxisCount: 3,
-                childAspectRatio: 2/3,
-                mainAxisSpacing: 2,
-              ), itemBuilder: (context,index){
-            return Container(color: Colors.white,
-            child: Image.network(images[index]['src']['tiny'],
-            fit: BoxFit.cover,),
-            );
-              }),
-          ),
+          Expanded(
+            child: Container(
+              child: GridView.builder(
+                  itemCount: images.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisSpacing: 2,
+                      crossAxisCount: 3,
+                      childAspectRatio: 2 / 3,
+                      mainAxisSpacing: 2),
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FullScreen(
+                                   images[index]['src']['large2x'],
+                                )));
+                      },
+                      child: Container(
+                        color: Colors.white,
+                        child: Image.network(
+                          images[index]['src']['tiny'],
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  }),
+            ),
           ),
           InkWell(
-            onTap: (){
-              loadmoreimages();
+            onTap: () {
+              loadmore();
             },
             child: Container(
-              //margin: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.black
-              ),
               height: 60,
               width: double.infinity,
+              color: Colors.black,
               child: Center(
                 child: Text('Load More',
-            style: TextStyle(
-                fontSize: 20,
-            ),
-            ),
+                    style: TextStyle(fontSize: 20, color: Colors.white)),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
   }
 }
-
